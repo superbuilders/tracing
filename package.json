@@ -1,0 +1,63 @@
+{
+	"name": "@superbuilders/tracing",
+	"version": "0.1.0",
+	"description": "Scoped OpenTelemetry tracing primitives for Superbuilders applications",
+	"module": "dist/tracer.js",
+	"main": "dist/tracer.js",
+	"types": "dist/tracer.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/tracer.d.ts",
+			"import": "./dist/tracer.js"
+		},
+		"./context": {
+			"types": "./dist/context.d.ts",
+			"import": "./dist/context.js"
+		},
+		"./span": {
+			"types": "./dist/span.d.ts",
+			"import": "./dist/span.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "bun run build.ts",
+		"typecheck": "tsgo --noEmit",
+		"prepublishOnly": "bun run build"
+	},
+	"keywords": [
+		"opentelemetry",
+		"tracing",
+		"pino",
+		"superbuilders"
+	],
+	"author": "Bjorn Pagen",
+	"license": "0BSD",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/superbuilders/tracing"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@opentelemetry/api": "^1.9.0",
+		"@superbuilders/errors": "^3.0.2"
+	},
+	"peerDependencies": {
+		"pino": ">=10"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.3.14",
+		"@typescript/native-preview": "^7.0.0-dev.20260612.1",
+		"pino": "^10.3.1",
+		"resolve-tspaths": "^0.8.23",
+		"typescript": "^6.0.3"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}
