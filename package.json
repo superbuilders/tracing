@@ -1,6 +1,6 @@
 {
 	"name": "@superbuilders/tracing",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Scoped OpenTelemetry tracing primitives for Superbuilders applications",
 	"module": "dist/tracer.js",
 	"main": "dist/tracer.js",
@@ -27,7 +27,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsgo -p tsconfig.build.json",
 		"typecheck": "tsgo --noEmit",
-		"prepublishOnly": "pnpm run build"
+		"prepublishOnly": "pnpm run build",
+		"test": "pnpm run build && node --test src/tracing.test.ts"
 	},
 	"keywords": [
 		"opentelemetry",
@@ -46,7 +47,7 @@
 	},
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.0",
-		"@superbuilders/errors": "^3.0.2"
+		"@superbuilders/errors": "^4.0.0"
 	},
 	"peerDependencies": {
 		"pino": ">=10"

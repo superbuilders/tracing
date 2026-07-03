@@ -33,14 +33,16 @@ function cleanAttrs(attrs: Attrs | undefined): otel.Attributes {
 	return clean
 }
 
+/**
+ * Records the exception and ERROR status on the OTel span. A throwing span
+ * implementation or exporter is deliberately swallowed — telemetry recording
+ * must never break the traced operation.
+ */
 function recordSpanFailure(otelSpan: FailureSpan, error: Error, message: string): void {
-	const result = errors.trySync(function record() {
+	errors.trySync(function recordExceptionAndStatus() {
 		otelSpan.recordException(error)
 		otelSpan.setStatus({ code: SpanStatusCode.ERROR, message })
 	})
-	if (result.error) {
-		return
-	}
 }
 
 function traceLog(
@@ -63,11 +65,7 @@ function recordFailure(
 	logger.error({ ...logAttrs, trace: traceLog("span_fail", otelSpan), spanName, error }, message)
 }
 
-async function span<T>(
-	name: string,
-	fn: (span: Span, opts: Options) => Promise<T>,
-	opts: Options
-): Promise<T> {
+async function span<T>(name: string, fn: (span: Span, opts: Options) => Promise<T>, opts: Options): Promise<T> {
 	return tracer.startActiveSpan(name, async function active(otelSpan) {
 		const startedAt = performance.now()
 		let failed = false
@@ -76,23 +74,30 @@ async function span<T>(
 			set(nextAttrs: Attrs): void {
 				const attrs = cleanAttrs(nextAttrs)
 				otelSpan.setAttributes(attrs)
-				opts.logger.debug(
-					{ trace: traceLog("span_attrs", otelSpan), spanName: name, attrs },
-					"span attrs"
-				)
+				opts.logger.debug({ trace: traceLog("span_attrs", otelSpan), spanName: name, attrs }, "span attrs")
 			},
 			event(eventName: string, eventAttrs?: Attrs): void {
 				const attrs = cleanAttrs(eventAttrs)
 				otelSpan.addEvent(eventName, attrs)
-				opts.logger.debug(
-					{ trace: traceLog("span_event", otelSpan), spanName: name, eventName, attrs },
-					"span event"
-				)
+				opts.logger.debug({ trace: traceLog("span_event", otelSpan), spanName: name, eventName, attrs }, "span event")
 			},
 			fail(error: Error, message: string, logAttrs?: Attrs): void {
 				failed = true
 				recordFailure(otelSpan, opts.logger, error, message, name, logAttrs)
 			}
+		}
+
+		function endSpan(endedFailed: boolean): void {
+			otelSpan.end()
+			opts.logger.debug(
+				{
+					trace: traceLog("span_end", otelSpan),
+					spanName: name,
+					durationMs: Math.round(performance.now() - startedAt),
+					failed: endedFailed
+				},
+				"span end"
+			)
 		}
 
 		const result = await errors.try(fn(activeSpan, opts))
@@ -104,32 +109,14 @@ async function span<T>(
 					`${name} failed`
 				)
 			}
-			otelSpan.end()
-			opts.logger.debug(
-				{
-					trace: traceLog("span_end", otelSpan),
-					spanName: name,
-					durationMs: Math.round(performance.now() - startedAt),
-					failed: true
-				},
-				"span end"
-			)
+			endSpan(true)
 			throw result.error
 		}
 
-		otelSpan.end()
-		opts.logger.debug(
-			{
-				trace: traceLog("span_end", otelSpan),
-				spanName: name,
-				durationMs: Math.round(performance.now() - startedAt),
-				failed
-			},
-			"span end"
-		)
+		endSpan(failed)
 		return result.data
 	})
 }
 
-export { span }
 export type { Span }
+export { span }

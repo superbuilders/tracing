@@ -1,4 +1,5 @@
 import * as errors from "@superbuilders/errors"
+import type { Logger } from "pino"
 
 type AttrValue = string | number | boolean | string[] | number[] | boolean[]
 
@@ -13,12 +14,10 @@ type ReservedTraceAttrKey =
 	| "otel.span_id"
 	| "tracing.id"
 
-type Attrs = Readonly<
-	Record<string, AttrValue | undefined> & Partial<Record<ReservedTraceAttrKey, never>>
->
+type Attrs = Readonly<Record<string, AttrValue | undefined> & Partial<Record<ReservedTraceAttrKey, never>>>
 
 type Options = {
-	logger: import("pino").Logger
+	logger: Logger
 	signal: AbortSignal
 }
 
@@ -29,17 +28,8 @@ type ScopedSignal = Disposable & {
 const ErrTimeout = errors.new("operation timeout")
 const ErrCanceled = errors.new("operation canceled")
 
-function isErrorReason(value: unknown): value is Error {
-	return (
-		typeof value === "object" &&
-		value !== null &&
-		"message" in value &&
-		typeof value.message === "string"
-	)
-}
-
 function abortReasonFromParent(parent: AbortSignal): Error {
-	if (isErrorReason(parent.reason)) {
+	if (parent.reason instanceof Error) {
 		return parent.reason
 	}
 	return errors.wrap(ErrCanceled, "parent signal")
@@ -85,5 +75,5 @@ function timeout(parent: AbortSignal, timeoutMs: number): ScopedSignal {
 	}
 }
 
+export type { Attrs, AttrValue, Options, ReservedTraceAttrKey, ScopedSignal }
 export { ErrCanceled, ErrTimeout, timeout }
-export type { AttrValue, Attrs, Options, ReservedTraceAttrKey, ScopedSignal }
