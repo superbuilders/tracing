@@ -1,6 +1,6 @@
 {
 	"name": "@superbuilders/tracing",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Scoped OpenTelemetry tracing primitives for Superbuilders applications",
 	"module": "dist/tracer.js",
 	"main": "dist/tracer.js",
@@ -9,15 +9,15 @@
 	"exports": {
 		".": {
 			"types": "./dist/tracer.d.ts",
-			"import": "./dist/tracer.js"
+			"default": "./dist/tracer.js"
 		},
 		"./context": {
 			"types": "./dist/context.d.ts",
-			"import": "./dist/context.js"
+			"default": "./dist/context.js"
 		},
 		"./span": {
 			"types": "./dist/span.d.ts",
-			"import": "./dist/span.js"
+			"default": "./dist/span.js"
 		}
 	},
 	"files": [
