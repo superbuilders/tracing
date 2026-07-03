@@ -16,15 +16,15 @@ function active(): ActiveTrace {
 	}
 }
 
-export { ErrCanceled, ErrTimeout, timeout } from "@superbuilders/tracing/context"
+export { ErrCanceled, ErrTimeout, timeout } from "#context.ts"
 export type {
 	AttrValue,
 	Attrs,
 	Options,
 	ReservedTraceAttrKey,
 	ScopedSignal
-} from "@superbuilders/tracing/context"
-export { span } from "@superbuilders/tracing/span"
-export type { Span } from "@superbuilders/tracing/span"
+} from "#context.ts"
+export { span } from "#span.ts"
+export type { Span } from "#span.ts"
 export { active }
 export type { ActiveTrace }

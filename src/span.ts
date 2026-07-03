@@ -3,7 +3,7 @@ import { SpanStatusCode, trace } from "@opentelemetry/api"
 import * as errors from "@superbuilders/errors"
 import type { Logger } from "pino"
 
-import type { Attrs, Options } from "@superbuilders/tracing/context"
+import type { Attrs, Options } from "#context.ts"
 
 const tracer = trace.getTracer("@superbuilders/tracing")
 
