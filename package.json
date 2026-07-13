@@ -1,6 +1,6 @@
 {
 	"name": "@superbuilders/tracing",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Scoped OpenTelemetry tracing primitives for Superbuilders applications",
 	"module": "dist/tracer.js",
 	"main": "dist/tracer.js",
@@ -53,9 +53,9 @@
 		"pino": ">=10"
 	},
 	"devDependencies": {
+		"@types/node": "^26.1.0",
 		"pino": "^10.3.1",
-		"typescript": "^7.0.2",
-		"@types/node": "^26.1.0"
+		"typescript": "^7.0.2"
 	},
 	"engines": {
 		"node": ">=18"
